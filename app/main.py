@@ -1,12 +1,9 @@
 from asyncio import as_completed
 import base64
 from distutils.log import error
-import io
 import os
-from pprint import pprint
 import shutil
 from pathlib import Path
-import zipfile
 
 import numpy as np
 import json
