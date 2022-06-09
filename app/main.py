@@ -1,5 +1,6 @@
+from asyncio import as_completed
 import base64
-import io
+from distutils.log import error
 import os
 import shutil
 from pathlib import Path
@@ -9,14 +10,16 @@ import json
 from PIL import Image
 
 
-from flask import Flask, current_app, request, jsonify, send_file, send_from_directory
+from flask import Flask, current_app, request, jsonify, send_file, send_from_directory, make_response
 from flask.templating import render_template
+from flask_cors import CORS
 
 from app.lung_cancer import dl_main, plot_output
 
 APP = Flask(__name__)
+CORS(APP)
 ROOT_DIR = Path(__file__).resolve().parent.parent
-ALLOWED_EXTENSIONS = {"raw", "mhd"}
+ALLOWED_EXTENSIONS = ["raw", "mhd"]
 
 
 def allowed_file(filename):
@@ -24,6 +27,17 @@ def allowed_file(filename):
         "." in filename
         and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
     )
+
+def success_response(message, statusCode, results = None):
+    response = make_response(jsonify({
+        "message": message,
+        "results": results
+    }), statusCode)
+    return response
+
+def error_response(message, statusCode):
+    response = make_response(jsonify({"message": message}), statusCode)
+    return response
 
 
 @APP.route("/")
@@ -39,15 +53,18 @@ def team():
 @APP.route("/upload", methods=["POST"])
 def upload():
     if request.method == "POST":
-        raw = request.files["rawfile"]
-        mhd = request.files["mhdfile"]
-        if (raw is None or raw.filename == "") or (
-            mhd is None or mhd.filename == ""
-        ):
-            return jsonify({"error": "No file provided"})
+        try:
+            raw = request.files["rawfile"]
+            mhd = request.files["mhdfile"]
+            if (raw is None or raw.filename == '') or (mhd is None or mhd.filename == ''):
+                return error_response("Missing files. Please upload all required files.", 400)
 
-        if not allowed_file(raw.filename) and not allowed_file(mhd.filename):
-            return jsonify({"error": "Image format not supported"})
+            if not allowed_file(raw.filename) and not allowed_file(mhd.filename):
+                return error_response("Unsupported file format.", 400)
+
+        except KeyError:
+            return error_response("Missing files. Please upload all required files.", 400)
+        
         raw_data = raw.read()
         mhd_data = mhd.read()
 
@@ -73,14 +90,16 @@ def upload():
         with open(os.path.join(ROOT_DIR, "data", "sample.raw"), "wb") as file:
             file.write(raw_data)
 
-        return {"State": "Data uploaded to directory. Ready for inferencing!!"}
-
+        return success_response("Data uploaded to directory. Ready for inferencing!!", 200) 
 
 @APP.route("/predict", methods=["GET"])
 def predict():
-    ct, prediction = dl_main.NoduleAnalysisApp().main()
-    plot_output.main(ct, prediction)
-    return jsonify({"Prediction": prediction})
+    try:
+        ct, prediction = dl_main.NoduleAnalysisApp().main()
+        plot_output.main(ct, prediction)
+        return success_response("Prediction results have been generated.", 200, results=prediction)
+    except:
+        return error_response("Something went very wrong! Please try again.", 500)
 
 
 @APP.route("/result", methods=["GET"])
@@ -90,33 +109,46 @@ def results():
 
 @APP.route("/getplot", methods=["POST"])
 def getplot():
-    data = json.loads(request.data.decode("ascii"))
-    id = data["id"]
+    try:
+        data = json.loads(request.data.decode("ascii"))
+        id = data["id"]
 
-    img_crop = np.load(os.path.join(ROOT_DIR, "output", str(id) + ".npy"))
-    plot_output.plot_nodule(img_crop)
-    with open(
-        os.path.join(ROOT_DIR, "output", "plots", "plot.png"), "rb"
-    ) as image_byte:
-        file = image_byte.read()
+        img_crop = np.load(os.path.join(ROOT_DIR, "output", str(id) + ".npy"))
+        plot_output.plot_nodule(img_crop)
+        with open(
+            os.path.join(ROOT_DIR, "output", "plots", "plot.png"), "rb"
+        ) as image_byte:
+            file = image_byte.read()
 
-    response = base64.b64encode(file)
-    return response
+        response = base64.b64encode(file)
+        return response
+    except:
+        return error_response("Something went very wrong! Please try again.", 500)
 
 
 @APP.route("/download", methods=["GET", "POST"])
 def download():
     output_file = os.path.join(ROOT_DIR, "nodules")
-    dir = os.path.join(ROOT_DIR, "output")
-    shutil.make_archive(output_file, 'zip', dir)
+    output_dir = os.path.join(ROOT_DIR, "output")
 
-    # with open(
-    #     os.path.join(ROOT_DIR, "nodules.zip"), "rb"
-    # ) as image_byte:
-    #     file = image_byte.read()
+    if (os.path.isdir(output_dir)):
+        zip_file_path = shutil.make_archive(output_file, 'zip', output_dir)
 
-    # uploads = os.path.join(ROOT_DIR, "nodules.zip")
-    # filename = "nodules.zip"
 
-    # response = base64.b64encode(file)
-    return send_file("nodules.zip", as_attachment=True)
+        # with open(
+        #     os.path.join(ROOT_DIR, "nodules.zip"), "rb"
+        # ) as image_byte:
+        #     file = image_byte.read()
+
+        # uploads = os.path.join(ROOT_DIR, "nodules.zip")
+        # filename = "nodules.zip"
+
+        # response = base64.b64encode(file)
+
+        # zip_file = open(zip_file_path)
+        # memory_file = io.BytesIO()
+        # return send_file(zip_file_path, attachment_filename='nodules.zip', as_attachment=True)
+        return send_from_directory(ROOT_DIR, filename="nodules.zip", as_attachment=True)
+    
+    else:
+        return error_response("Output directory is missing.", 500)

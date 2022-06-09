@@ -237,8 +237,8 @@ class NoduleAnalysisApp:
         # Get paths of models for each use case
         ###############
 
-        self.use_cuda = torch.cuda.is_available()
-        # self.use_cuda = False
+        # self.use_cuda = torch.cuda.is_available()
+        self.use_cuda = False
         self.device = torch.device("cuda" if self.use_cuda else "cpu")
 
         self.segmentation_path = os.path.join(
