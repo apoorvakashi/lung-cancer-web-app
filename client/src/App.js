@@ -38,6 +38,7 @@ function App() {
       </Main>
       <Footer />
       <Snackbar
+        data-testid="app-snackbar"
         open={snackbar.open}
         onClose={handleSnackbarClose}
         autoHideDuration={3000}

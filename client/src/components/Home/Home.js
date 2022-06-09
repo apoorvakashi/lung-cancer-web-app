@@ -109,6 +109,7 @@ const Home = () => {
       </Typography>
       <UploadButton
         ref={rawFileInputRef}
+        data-testid="raw-file-input"
         label="Select RAW file"
         name="rawfile"
         fileExtension=".raw"
@@ -116,6 +117,7 @@ const Home = () => {
       />
       <UploadButton
         ref={mhdFileInputRef}
+        data-testid="mhd-file-input"
         label="Select MHD file"
         name="mhdfile"
         fileExtension=".mhd"
@@ -123,6 +125,7 @@ const Home = () => {
       />
       <Box sx={buttonsBoxStyle}>
         <Button
+          data-testid="upload-btn"
           sx={buttonStyle}
           variant="outlined"
           disabled={!rawFileUploaded || !mhdFileUploaded}
@@ -131,13 +134,10 @@ const Home = () => {
           Upload
         </Button>
         <Button
+          data-testid="predict-btn"
           sx={buttonStyle}
           variant="outlined"
-          disabled={
-            uploadStatus !== FULFILLED ||
-            predictionStatus === PENDING ||
-            predictionStatus === REJECTED
-          }
+          disabled={uploadStatus !== FULFILLED || predictionStatus === PENDING}
           onClick={handlePredictBtnClick}
         >
           Predict

@@ -18,7 +18,7 @@ const Header = () => {
         <Grid container spacing={2} alignItems="center">
           <Grid item sm={10}>
             <RouterLink to="/" style={linkStyle}>
-              <Typography sx={linkTextStyle} component="span">
+              <Typography sx={linkTextStyle} component="span" data-testid="app-header">
                 {APP_HEADER}
               </Typography>
             </RouterLink>

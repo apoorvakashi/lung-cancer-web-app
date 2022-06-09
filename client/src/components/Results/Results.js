@@ -89,7 +89,7 @@ const Results = () => {
               <Typography variant="h4" color="primary">
                 Nodule Predictions
               </Typography>
-              <Button variant="contained" color="secondary">
+              <Button variant="contained" color="secondary" data-testid="download-btn">
                 <Link
                   sx={downloadLinkStyle}
                   href={BACKEND_SERVER_BASE_URL + API_ENDPOINTS.download}
@@ -125,20 +125,27 @@ const Results = () => {
                   {predictionData.map((data, index) => (
                     <TableRow key={`prediction_nodule_${index}`}>
                       <TableCell align="center">{index + 1}</TableCell>
-                      <TableCell align="center">
+                      <TableCell
+                        align="center"
+                        data-testid={`nodule-probability_${index}`}
+                      >
                         {data.Nodule_Probability.toFixed(2)}
                       </TableCell>
-                      <TableCell align="center">
+                      <TableCell
+                        align="center"
+                        data-testid={`malignancy-probability_${index}`}
+                      >
                         {data.Malignancy_Probability.toFixed(2)}
                       </TableCell>
-                      <TableCell align="center">
+                      <TableCell align="center" data-testid={`xyz-coordinates_${index}`}>
                         {render_XYZ_Coordinates(data.XYZ_Coordinates)}
                       </TableCell>
-                      <TableCell align="center">
+                      <TableCell align="center" data-testid={`irc-coordinates_${index}`}>
                         {render_IRC_Coordinates(data.IRC_Coordinates)}
                       </TableCell>
                       <TableCell>
                         <Button
+                          data-testid={`plot-nodules-btn_${index}`}
                           variant="contained"
                           color="secondary"
                           onClick={() => {

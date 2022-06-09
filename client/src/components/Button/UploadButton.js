@@ -34,6 +34,7 @@ const UploadButton = React.forwardRef((props, ref) => {
         {label}
         <input
           ref={ref}
+          data-testid={props['data-testid']}
           hidden
           type="file"
           name={name}
@@ -41,7 +42,11 @@ const UploadButton = React.forwardRef((props, ref) => {
           onChange={handleFileInputChange}
         />
       </Button>
-      <Typography component="span" sx={filenameStyle}>
+      <Typography
+        component="span"
+        sx={filenameStyle}
+        data-testid={`${props['data-testid']}-filename`}
+      >
         {filename === '' ? 'No file chosen' : filename}
       </Typography>
     </Box>
@@ -53,6 +58,7 @@ UploadButton.propTypes = {
   name: PropTypes.string,
   fileExtension: PropTypes.string,
   setFileChosenStatus: PropTypes.func,
+  'data-testid': PropTypes.string,
 };
 
 export default UploadButton;
