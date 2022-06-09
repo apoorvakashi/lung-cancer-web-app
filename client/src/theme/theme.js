@@ -18,6 +18,15 @@ const theme = createTheme({
       paper: '#eeeeee',
     },
   },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: 'capitalize',
+        },
+      },
+    },
+  },
 });
 
 export default theme;
