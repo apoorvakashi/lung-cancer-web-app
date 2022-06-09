@@ -32,10 +32,10 @@ const MemberCard = props => {
           {place}
         </Typography>
         <CardActions sx={cardActionsStyle}>
-          <Link href={linkedIn}>
+          <Link href={linkedIn} target="_blank">
             <AiFillLinkedin size="1.5em" color="#15133c" />
           </Link>
-          <Link href={github}>
+          <Link href={github} target="_blank">
             <AiFillGithub size="1.5em" color="#15133c" />
           </Link>
         </CardActions>
