@@ -4,7 +4,6 @@ export const projectGuide = {
   role: 'Associate Professor',
   place: 'Department of ISE, RNSIT',
   linkedIn: 'https://www.linkedin.com/in/rajkumar14/',
-  github: 'https://github.com/',
 };
 
 export const teamMembers = [
