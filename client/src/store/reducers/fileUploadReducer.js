@@ -1,6 +1,12 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import api from '../../api/api';
-import { FULFILLED, IDLE, PENDING, REJECTED } from '../../constants/constants';
+import {
+  API_ENDPOINTS,
+  FULFILLED,
+  IDLE,
+  PENDING,
+  REJECTED,
+} from '../../constants/constants';
 
 const INITIAL_STATE = {
   status: IDLE,
@@ -29,7 +35,7 @@ const fileUploadSlice = createSlice({
 });
 
 export const uploadFiles = createAsyncThunk('upload/uploadFiles', async data => {
-  const response = await api.post('/upload', data, {
+  const response = await api.post(API_ENDPOINTS.upload, data, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },

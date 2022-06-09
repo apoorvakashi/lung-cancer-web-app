@@ -2,6 +2,7 @@ import {
   Alert,
   Box,
   Button,
+  Link,
   Paper,
   Table,
   TableBody,
@@ -13,15 +14,21 @@ import {
 } from '@mui/material';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { PENDING, FULFILLED } from '../../constants/constants';
+import {
+  API_ENDPOINTS,
+  BACKEND_SERVER_BASE_URL,
+  PENDING,
+} from '../../constants/constants';
 import { getImagePlot } from '../../store/reducers/predictionReducer';
 import {
   selectImagePlot,
   selectPredictionData,
   selectPredictionStatus,
 } from '../../store/selectors';
+import Loading from '../Loading/Loading';
 import ImagePlotModal from './ImagePlotModal';
 import {
+  downloadLinkStyle,
   resultsContainerStyle,
   resultsHeadingBoxStyle,
   tableHeaderCellStyle,
@@ -75,15 +82,21 @@ const Results = () => {
   return (
     <React.Fragment>
       <div style={resultsContainerStyle}>
-        {predictionStatus === PENDING && <div>Loading...</div>}
-        {predictionStatus === FULFILLED && predictionData && predictionData.length > 0 ? (
+        {predictionStatus === PENDING && <Loading />}
+        {predictionData && predictionData.length > 0 ? (
           <React.Fragment>
             <Box sx={resultsHeadingBoxStyle}>
               <Typography variant="h4" color="primary">
                 Nodule Predictions
               </Typography>
               <Button variant="contained" color="secondary">
-                Download Nodule Data
+                <Link
+                  sx={downloadLinkStyle}
+                  href={BACKEND_SERVER_BASE_URL + API_ENDPOINTS.download}
+                  target="_self"
+                >
+                  Download Nodule Data
+                </Link>
               </Button>
             </Box>
             <TableContainer component={Paper}>
@@ -126,6 +139,8 @@ const Results = () => {
                       </TableCell>
                       <TableCell>
                         <Button
+                          variant="contained"
+                          color="secondary"
                           onClick={() => {
                             handlePlotNodulesBtnClick(index);
                           }}

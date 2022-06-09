@@ -17,7 +17,7 @@ import {
 } from './MemberCardStyle';
 
 const MemberCard = props => {
-  const { image, name, role, place, linkedIn, github } = props.member;
+  const { image, name, role, place, linkedIn } = props.member;
   return (
     <Card sx={cardStyle}>
       <CardMedia component="img" src={`/images/${image}`} sx={cardMediaStyle} />
@@ -32,12 +32,14 @@ const MemberCard = props => {
           {place}
         </Typography>
         <CardActions sx={cardActionsStyle}>
-          <Link href={linkedIn}>
+          <Link href={linkedIn} target="_blank">
             <AiFillLinkedin size="1.5em" color="#15133c" />
           </Link>
-          <Link href={github}>
-            <AiFillGithub size="1.5em" color="#15133c" />
-          </Link>
+          {props.member.github && (
+            <Link href={props.member.github} target="_blank">
+              <AiFillGithub size="1.5em" color="#15133c" />
+            </Link>
+          )}
         </CardActions>
       </CardContent>
     </Card>

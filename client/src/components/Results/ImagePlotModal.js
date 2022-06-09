@@ -2,6 +2,7 @@ import { Alert, Grid, IconButton, Modal, Paper, Typography } from '@mui/material
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
+import Loading from '../Loading/Loading';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
 import { selectImagePlot, selectImagePlotStatus } from '../../store/selectors';
 import { imageContainerStyle, imageStyle, paperStyle } from './ImagePlotModalStyle';
@@ -27,7 +28,7 @@ const ImagePlotModal = props => {
             </IconButton>
           </Grid>
           <Grid item sm={12} sx={imageContainerStyle}>
-            {imagePlotStatus === PENDING && <div>Loading...</div>}
+            {imagePlotStatus === PENDING && <Loading />}
             {imagePlotStatus === REJECTED && (
               <Alert severity="error">Something went wrong! Please try again.</Alert>
             )}

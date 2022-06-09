@@ -1,50 +1,18 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { persistReducer } from 'redux-persist';
+import autoMergeLevel2 from 'redux-persist/es/stateReconciler/autoMergeLevel2';
+import storage from 'redux-persist/lib/storage';
 import api from '../../api/api';
-import { FULFILLED, IDLE, PENDING, REJECTED } from '../../constants/constants';
+import {
+  API_ENDPOINTS,
+  FULFILLED,
+  IDLE,
+  PENDING,
+  REJECTED,
+} from '../../constants/constants';
 
 const INITIAL_STATE = {
-  data: {
-    0: {
-      IRC_Coordinates: { col: 31, index: 41, row: 180 },
-      Malignancy_Probability: 0.9550638794898987,
-      Nodule_Probability: 0.9999810457229614,
-      XYZ_Coordinates: {
-        x: -174.48671735902406,
-        y: -57.89058208465576,
-        z: -232.709991,
-      },
-    },
-    1: {
-      IRC_Coordinates: { col: 28, index: 42, row: 184 },
-      Malignancy_Probability: 0.866930365562439,
-      Nodule_Probability: 0.9983554482460022,
-      XYZ_Coordinates: {
-        x: -176.7718743242798,
-        y: -54.843706130981445,
-        z: -230.209991,
-      },
-    },
-    2: {
-      IRC_Coordinates: { col: 86, index: 42, row: 297 },
-      Malignancy_Probability: 0.4061785042285919,
-      Nodule_Probability: 0.9887092709541321,
-      XYZ_Coordinates: {
-        x: -132.5921729960022,
-        y: 31.230539560317993,
-        z: -230.209991,
-      },
-    },
-    3: {
-      IRC_Coordinates: { col: 130, index: 52, row: 375 },
-      Malignancy_Probability: 0.08192909508943558,
-      Nodule_Probability: 0.9577417373657227,
-      XYZ_Coordinates: {
-        x: -99.07653750558472,
-        y: 90.64462065696716,
-        z: -205.209991,
-      },
-    },
-  },
+  data: {},
   predictionSuccessResponse: '',
   predictionStatus: IDLE,
   predictionError: null,
@@ -91,7 +59,7 @@ const predictionSlice = createSlice({
 export const getImagePlot = createAsyncThunk(
   'prediction/getNodulePlot',
   async noduleIndex => {
-    const response = await api.post('/getplot', { id: noduleIndex });
+    const response = await api.post(API_ENDPOINTS.getPlot, { id: noduleIndex });
     return {
       nodule: `nodule_${noduleIndex}`,
       data: response.data,
@@ -100,8 +68,26 @@ export const getImagePlot = createAsyncThunk(
 );
 
 export const getPrediction = createAsyncThunk('prediction/getPrediction', async () => {
-  const response = await api.get('/predict');
+  const response = await api.get(API_ENDPOINTS.predict);
   return response.data;
 });
 
-export default predictionSlice.reducer;
+const PERSIST_CONFIG = {
+  key: 'prediction',
+  version: 1,
+  storage: storage,
+  stateReconciler: autoMergeLevel2,
+  whitelist: ['data'],
+  blacklist: [
+    'predictionSuccessResponse',
+    'predictionStatus',
+    'predictionError',
+    'imagePlot',
+    'imagePlotStatus',
+    'imagePlotError',
+  ],
+};
+
+const predictionReducer = persistReducer(PERSIST_CONFIG, predictionSlice.reducer);
+
+export default predictionReducer;

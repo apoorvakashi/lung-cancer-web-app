@@ -1,4 +1,4 @@
-import { Box, Button, Typography } from '@mui/material';
+import { Alert, AlertTitle, Box, Button, Typography } from '@mui/material';
 import React, { createRef, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -13,7 +13,15 @@ import {
   selectUploadSuccessResponse,
 } from '../../store/selectors';
 import UploadButton from '../Button/UploadButton';
-import { buttonsBoxStyle, buttonStyle, homeContainerStyle } from './HomeStyle';
+import Loading from '../Loading/Loading';
+import {
+  buttonsBoxStyle,
+  buttonStyle,
+  homeContainerStyle,
+  loadingContainerStyle,
+  noteTitleStyle,
+  textStyle,
+} from './HomeStyle';
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -92,11 +100,11 @@ const Home = () => {
 
   return (
     <div style={homeContainerStyle}>
-      <Typography sx={{ width: '400px', alignSelf: 'flexStart' }}>
+      <Typography sx={textStyle}>
         This application takes 3D CT scans of human torsos as input and returns the
         location of the malignant nodules, if any exist.
       </Typography>
-      <Typography sx={{ width: '400px', alignSelf: 'flexStart' }}>
+      <Typography sx={textStyle}>
         Input Format: RAW and MHD files of a CT scan.
       </Typography>
       <UploadButton
@@ -125,13 +133,26 @@ const Home = () => {
         <Button
           sx={buttonStyle}
           variant="outlined"
-          disabled={uploadStatus !== FULFILLED || predictionStatus === PENDING}
+          disabled={
+            uploadStatus !== FULFILLED ||
+            predictionStatus === PENDING ||
+            predictionStatus === REJECTED
+          }
           onClick={handlePredictBtnClick}
         >
           Predict
         </Button>
       </Box>
-      {predictionStatus === PENDING && <div>Loading....</div>}
+      {predictionStatus === PENDING && (
+        <div style={loadingContainerStyle}>
+          <Alert icon={false} severity="info">
+            <AlertTitle sx={noteTitleStyle}>Note</AlertTitle>
+            Relax while we generate the prediction results. Until then, please do not
+            close this tab or refresh the page.
+          </Alert>
+          <Loading />
+        </div>
+      )}
     </div>
   );
 };
