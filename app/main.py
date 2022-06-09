@@ -126,7 +126,7 @@ def getplot():
         return error_response("Something went very wrong! Please try again.", 500)
 
 
-@APP.route("/download", methods=["GET", "POST"])
+@APP.route("/download", methods=["GET"])
 def download():
     output_file = os.path.join(ROOT_DIR, "nodules")
     output_dir = os.path.join(ROOT_DIR, "output")
@@ -134,21 +134,7 @@ def download():
     if (os.path.isdir(output_dir)):
         zip_file_path = shutil.make_archive(output_file, 'zip', output_dir)
 
-
-        # with open(
-        #     os.path.join(ROOT_DIR, "nodules.zip"), "rb"
-        # ) as image_byte:
-        #     file = image_byte.read()
-
-        # uploads = os.path.join(ROOT_DIR, "nodules.zip")
-        # filename = "nodules.zip"
-
-        # response = base64.b64encode(file)
-
-        # zip_file = open(zip_file_path)
-        # memory_file = io.BytesIO()
-        # return send_file(zip_file_path, attachment_filename='nodules.zip', as_attachment=True)
-        return send_from_directory(ROOT_DIR, filename="nodules.zip", as_attachment=True)
+        return send_file(zip_file_path, attachment_filename='nodules.zip', as_attachment=True)
     
     else:
         return error_response("Output directory is missing.", 500)
