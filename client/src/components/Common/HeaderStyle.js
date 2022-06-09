@@ -1,6 +1,6 @@
 export const appBarStyle = {
   position: 'sticky',
-  padding: 1,
+  padding: 0,
   flexShrink: 0,
   display: 'flex',
   flexDirection: 'row',
@@ -13,13 +13,19 @@ export const toolbarStyle = {
 };
 
 export const linkStyle = {
-  color: 'primary.contrastText',
-  '&:hover': {
-    textDecoration: 'none',
-  },
+  color: '#ffffff',
+  textDecoration: 'none',
 };
 
-export const headerButtonContainerStyle = {
+export const linkTextStyle = {
+  fontSize: '1.2em',
+};
+
+export const linkTextStyle2 = {
+  fontSize: '1em',
+};
+
+export const headerLinkContainerStyle = {
   display: 'flex',
-  gap: 2,
+  gap: 4,
 };

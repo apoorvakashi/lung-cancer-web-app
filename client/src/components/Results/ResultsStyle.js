@@ -11,6 +11,10 @@ export const resultsHeadingBoxStyle = {
   alignItems: 'center',
 };
 
+export const downloadLinkStyle = {
+  textDecoration: 'none',
+};
+
 export const tableHeaderRowStyle = {
   backgroundColor: 'primary.main',
 };

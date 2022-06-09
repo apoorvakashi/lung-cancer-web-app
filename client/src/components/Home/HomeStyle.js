@@ -39,3 +39,19 @@ export const buttonStyle = {
     fontWeight: 600,
   },
 };
+
+export const textStyle = {
+  width: '400px',
+  textAlign: 'justify',
+};
+
+export const loadingContainerStyle = {
+  width: '400px',
+  textAlign: 'justify',
+};
+
+export const noteTitleStyle = {
+  fontWeight: 600,
+  textDecoration: 'underline',
+  textTransform: 'uppercase',
+};
